@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Time Zone</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start; /* Align buttons to the left */
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            padding: 20px; /* Add padding for better spacing */
+            transition: background-color 0.5s, color 0.5s; /* Smooth transition for color changes */
+        }
+        h1 {
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        input {
+            padding: 10px;
+            font-size: 1.2rem;
+            margin: 5px 0 20px; /* Add margin below the search bar */
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 300px; /* Keep the width consistent */
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            margin: 5px 0; /* Add margin between buttons */
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            width: 300px; /* Keep the button width consistent */
+        }
+        .dark-mode {
+            background-color: black;
+            color: white;
+        }
+        .dark-mode button {
+            background-color: #444;
+            color: white;
+        }
+        .dark-mode button:hover {
+            background-color: #555; /* Darker gray on hover */
+        }
+        .light-mode {
+            background-color: white;
+            color: black;
+        }
+        .light-mode button {
+            background-color: #f0f0f0; /* Default background for buttons */
+            color: black;
+        }
+        .light-mode button:hover {
+            background-color: #ddd; /* Change background on hover */
+        }
+        #timezoneButtons {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start; /* Align buttons to the left */
+        }
+    </style>
+</head>
+<body class="dark-mode">
+    <h1>Select a Time Zone</h1>
+    <input type="text" id="timezoneSearch" placeholder="Search Time Zone or City" oninput="filterTimezones()">
+    <div id="timezoneButtons"></div>
+    
+    <script>
+        const timezones = [
+            { name: 'UTC-12:00', value: 'Etc/GMT+12' },
+            { name: 'UTC-11:00', value: 'Etc/GMT+11' },
+            { name: 'UTC-10:00', value: 'Etc/GMT+10' },
+            { name: 'UTC-09:00', value: 'Etc/GMT+9' },
+            { name: 'UTC-08:00', value: 'Etc/GMT+8' },
+            { name: 'UTC-07:00', value: 'Etc/GMT+7' },
+            { name: 'UTC-06:00', value: 'Etc/GMT+6' },
+            { name: 'UTC-05:00', value: 'Etc/GMT+5' },
+            { name: 'UTC-04:00', value: 'Etc/GMT+4' },
+            { name: 'UTC-03:00', value: 'Etc/GMT+3' },
+            { name: 'UTC-02:00', value: 'Etc/GMT+2' },
+            { name: 'UTC-01:00', value: 'Etc/GMT+1' },
+            { name: 'UTC+01:00', value: 'Etc/GMT-1' },
+            { name: 'UTC+02:00', value: 'Etc/GMT-2' },
+            { name: 'UTC+03:00', value: 'Etc/GMT-3' },
+            { name: 'UTC+04:00', value: 'Etc/GMT-4' },
+            { name: 'UTC+05:00', value: 'Etc/GMT-5' },
+            { name: 'UTC+06:00', value: 'Etc/GMT-6' },
+            { name: 'UTC+07:00', value: 'Etc/GMT-7' },
+            { name: 'UTC+08:00', value: 'Etc/GMT-8' },
+            { name: 'UTC+09:00', value: 'Etc/GMT-9' },
+            { name: 'UTC+10:00', value: 'Etc/GMT-10' },
+            { name: 'UTC+11:00', value: 'Etc/GMT-11' },
+            { name: 'UTC+12:00', value: 'Etc/GMT-12' },
+            { name: 'GMT', value: 'Etc/GMT' },
+            { name: 'CET', value: 'CET' },
+            { name: 'CEST', value: 'CEST' },
+            { name: 'EET', value: 'EET' },
+            { name: 'EEST', value: 'EEST' },
+            { name: 'AST', value: 'AST' },
+            { name: 'ADT', value: 'ADT' },
+            { name: 'NST', value: 'NST' },
+            { name: 'NDT', value: 'NDT' },
+            { name: 'AKST', value: 'AKST' },
+            { name: 'AKDT', value: 'AKDT' },
+            { name: 'PST', value: 'PST' },
+            { name: 'PDT', value: 'PDT' },
+            { name: 'MST', value: 'MST' },
+            { name: 'MDT', value: 'MDT' },
+            { name: 'CST', value: 'CST' },
+            { name: 'CDT', value: 'CDT' },
+            { name: 'EST', value: 'EST' },
+            { name: 'EDT', value: 'EDT' },
+            { name: 'WET', value: 'WET' },
+            { name: 'WEST', value: 'WEST' },
+            { name: 'CAT', value: 'CAT' },
+            { name: 'SAST', value: 'SAST' },
+            { name: 'EAT', value: 'EAT' },
+            { name: 'WAT', value: 'WAT' },
+            { name: 'FET', value: 'FET' },
+            { name: 'IRST', value: 'IRST' },
+            { name: 'IRDT', value: 'IRDT' },
+            { name: 'TRT', value: 'TRT' },
+            { name: 'MSK', value: 'MSK' },
+            { name: 'MSD', value: 'MSD' },
+            { name: 'AZT', value: 'AZT' },
+            { name: 'AZST', value: 'AZST' },
+            { name: 'NPT', value: 'NPT' },
+            { name: 'MMT', value: 'MMT' },
+            { name: 'SLT', value: 'SLT' },
+            { name: 'ICT', value: 'ICT' },
+            { name: 'JST', value: 'JST' },
+            { name: 'ACST', value: 'ACST' },
+            { name: 'ACDT', value: 'ACDT' },
+            { name: 'AWST', value: 'AWST' },
+            { name: 'CHAST', value: 'CHAST' },
+            { name: 'NZST', value: 'NZST' },
+            { name: 'NZDT', value: 'NZDT' },
+        ];
+
+        function setTimezone(timezone) {
+            localStorage.setItem('currentTimezone', timezone);
+            window.location.href = 'CurrentTime.html';
+        }
+
+        function populateTimezones() {
+            const timezoneButtonsDiv = document.getElementById('timezoneButtons');
+            timezoneButtonsDiv.innerHTML = ''; // Clear existing buttons
+            timezones.forEach(zone => {
+                const button = document.createElement('button');
+                button.textContent = zone.name;
+                button.onclick = () => setTimezone(zone.value);
+                timezoneButtonsDiv.appendChild(button);
+            });
+        }
+
+        function filterTimezones() {
+            const searchValue = document.getElementById('timezoneSearch').value.toLowerCase();
+            const timezoneButtonsDiv = document.getElementById('timezoneButtons');
+            const buttons = timezoneButtonsDiv.children;
+
+            for (let button of buttons) {
+                const text = button.textContent.toLowerCase();
+                button.style.display = text.includes(searchValue) ? 'block' : 'none';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            populateTimezones();
+        });
+    </script>
+</body>
+</html>
